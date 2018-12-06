@@ -34,7 +34,22 @@ class TwitterClient(object):
 		using simple regex statements. 
 		'''
 		tweet = ' '.join(re.sub("(@[A-Za-z0-9]+)|([^0-9A-Za-z \t])|(\w+:\/\/\S+)", " ", tweet).split())
+		
+		#Convert to lower case
+		tweet = tweet.lower()
+		#Convert www.* or https?://* to URL
+		tweet = re.sub('((www\.[^\s]+)|(https?://[^\s]+))','URL',tweet)
+		#Convert @username to AT_USER
+		tweet = re.sub('@[^\s]+','AT_USER',tweet)
+		#Remove additional white spaces
+		tweet = re.sub('[\s]+', ' ', tweet)
+		#Replace #word with word
+		tweet = re.sub(r'#([^\s]+)', r'\1', tweet)
+		#trim
+		tweet = tweet.strip('\'"')
+		#Substitute negative words
 		tweet = re.sub(r'\b(tak|bkn|tdk|gak|gk|ga|enggak)\b', r'tidak', inp)
+
 		return  tweet
 
 	def get_tweet_sentiment(self, tweet): 
