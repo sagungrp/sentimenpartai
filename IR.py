@@ -1,7 +1,10 @@
 import re 
 import tweepy 
 from tweepy import OAuthHandler 
-from textblob import TextBlob 
+from textblob import TextBlob
+import goslate
+
+gs = goslate.Goslate()
 
 class TwitterClient(object): 
 	''' 
@@ -49,7 +52,11 @@ class TwitterClient(object):
 		tweet = tweet.strip('\'"')
 		#Substitute negative words
 		tweet = re.sub(r'\b(tak|bkn|tdk|gak|gk|ga|enggak)\b', r'tidak', tweet)
-
+		#Decode tweet to UTF-8 to enable printing
+		#TODO - add html.escape to convert thing such as ampersand and apostrophe
+		tweet = tweet.decode("UTF-8")
+		#translate tweet to english
+		#tweet = gs.translate(tweet, 'en')
 		return  tweet
 
 	def get_tweet_sentiment(self, tweet): 
