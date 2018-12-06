@@ -48,7 +48,7 @@ class TwitterClient(object):
 		#trim
 		tweet = tweet.strip('\'"')
 		#Substitute negative words
-		tweet = re.sub(r'\b(tak|bkn|tdk|gak|gk|ga|enggak)\b', r'tidak', inp)
+		tweet = re.sub(r'\b(tak|bkn|tdk|gak|gk|ga|enggak)\b', r'tidak', tweet)
 
 		return  tweet
 
