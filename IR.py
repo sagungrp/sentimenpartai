@@ -54,7 +54,7 @@ class TwitterClient(object):
 		tweet = re.sub(r'\b(tak|bkn|tdk|gak|gk|ga|enggak)\b', r'tidak', tweet)
 		#Decode tweet to UTF-8 to enable printing
 		#TODO - add html.escape to convert thing such as ampersand and apostrophe
-		tweet = tweet.decode("UTF-8")
+		#tweet = tweet.decode('utf8')
 		#translate tweet to english
 		#tweet = gs.translate(tweet, 'en')
 		return  tweet
@@ -91,7 +91,7 @@ class TwitterClient(object):
 				parsed_tweet = {} 
 
 				# saving text of tweet 
-				parsed_tweet['text'] = tweet.text 
+				parsed_tweet['text'] = tweet.text.encode('utf-16be', 'ignore')
 				# saving sentiment of tweet 
 				parsed_tweet['sentiment'] = self.get_tweet_sentiment(tweet.text) 
 
@@ -114,7 +114,7 @@ def main():
 	# creating object of TwitterClient Class 
 	api = TwitterClient() 
 	# calling function to get tweets 
-	tweets = api.get_tweets(query = 'prabowo gantipresiden2019', count = 200) 
+	tweets = api.get_tweets(query = 'justin trudeau', count = 1000) 
 
 	# picking positive tweets from tweets 
 	ptweets = [tweet for tweet in tweets if tweet['sentiment'] == 'positive'] 
