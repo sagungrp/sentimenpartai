@@ -34,21 +34,26 @@ class TwitterClient(object):
 		using simple regex statements. 
 		'''
 		tweet = ' '.join(re.sub("(@[A-Za-z0-9]+)|([^0-9A-Za-z \t])|(\w+:\/\/\S+)", " ", tweet).split())
-		
 		#Convert to lower case
 		tweet = tweet.lower()
 		#Convert www.* or https?://* to URL
 		tweet = re.sub('((www\.[^\s]+)|(https?://[^\s]+))','URL',tweet)
-		#Convert @username to AT_USER
-		tweet = re.sub('@[^\s]+','AT_USER',tweet)
 		#Remove additional white spaces
 		tweet = re.sub('[\s]+', ' ', tweet)
 		#Replace #word with word
 		tweet = re.sub(r'#([^\s]+)', r'\1', tweet)
+		#Delete @username
+	    tweet = re.sub('@[^\s]+','',tweet)
 		#trim
 		tweet = tweet.strip('\'"')
 		#Substitute negative words
-		tweet = re.sub(r'\b(tak|bkn|tdk|gak|gk|ga|enggak)\b', r'tidak', tweet)
+		tweet = re.sub(r'\b(tak|bkn|tdk|gak|gk|ga|enggak|g)\b', r'tidak', tweet)
+		#Substitute positive words
+		tweet = re.sub(r'\b(bgs|mantap|okayy)\b', r'bagus', tweet)
+		#Delete reiterant letters
+		tweet = re.sub(r'([a-z])\1+', r'\1', tweet)
+		#Remove single-letter words
+		tweet = ' '.join( [w for w in tweet.split() if len(w)>1] )
 
 		return  tweet
 
