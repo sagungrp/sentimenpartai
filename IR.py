@@ -1,12 +1,16 @@
 import re 
 import tweepy 
 from tweepy import OAuthHandler 
-from textblob import TextBlob 
+from textblob import TextBlob
+from pathlib import Path
+
+negations = {'tak','bkn','tdk','gak','gk','ga','enggak','tidak','bukan','bukanlah','tidaklah'}
 
 class TwitterClient(object): 
 	''' 
 	Generic Twitter Class for sentiment analysis. 
 	'''
+	
 	def __init__(self): 
 		''' 
 		Class constructor or initialization method. 
@@ -16,6 +20,11 @@ class TwitterClient(object):
 		consumer_secret = 'qm5kdAjHLjSVNBoclAlzPVPAyJPTXmEhwCUdJixvdll5CmqRVz'
 		access_token = '1070195239707586560-wjbg5Rog9s8MX0ZuImdBXe0BUCLflQ'
 		access_token_secret = 'HVbRVALs3iwqSQKQ5k3QkLN4mms5GMd9AgVIa3H0kHxAg'
+
+		p = Path('positive.txt')
+		self.positiveWords = set(p.read_text().splitlines())
+		p = Path('negative.txt')
+		self.negativeWords = set(p.read_text().splitlines())
 
 		# attempt authentication 
 		try: 
@@ -28,11 +37,15 @@ class TwitterClient(object):
 		except: 
 			print("Error: Authentication Failed") 
 
+		
+
 	def clean_tweet(self, tweet): 
 		''' 
 		Utility function to clean tweet text by removing links, special characters 
 		using simple regex statements. 
 		'''
+
+		print("sebelum: " + tweet)
 		tweet = ' '.join(re.sub("(@[A-Za-z0-9]+)|([^0-9A-Za-z \t])|(\w+:\/\/\S+)", " ", tweet).split())
 		#Convert to lower case
 		tweet = tweet.lower()
@@ -43,31 +56,60 @@ class TwitterClient(object):
 		#Replace #word with word
 		tweet = re.sub(r'#([^\s]+)', r'\1', tweet)
 		#Delete @username
-	    tweet = re.sub('@[^\s]+','',tweet)
+		tweet = re.sub('@[^\s]+','', tweet)
 		#trim
 		tweet = tweet.strip('\'"')
-		#Substitute negative words
-		tweet = re.sub(r'\b(tak|bkn|tdk|gak|gk|ga|enggak|g)\b', r'tidak', tweet)
-		#Substitute positive words
-		tweet = re.sub(r'\b(bgs|mantap|okayy)\b', r'bagus', tweet)
 		#Delete reiterant letters
 		tweet = re.sub(r'([a-z])\1+', r'\1', tweet)
 		#Remove single-letter words
 		tweet = ' '.join( [w for w in tweet.split() if len(w)>1] )
 
-		return  tweet
+		#Decode tweet to UTF-8 to enable printing
+		#TODO - add html.escape to convert thing such as ampersand and apostrophe
+		print("sesudah: " + tweet)
+		return tweet
 
 	def get_tweet_sentiment(self, tweet): 
 		''' 
 		Utility function to classify sentiment of passed tweet 
 		using textblob's sentiment method 
 		'''
+		positiveScore = 0
+		negativeScore = 0
+		totalScore = 0
+		NEGATION_WEIGHT = 2
+		OPPOSITE_CONJUNCTION_WEIGHT = -1
+
+		tweet = self.clean_tweet(tweet)
+		
+		words = tweet.split()
+
+		#  1. analyze negation word window first
+		for idx, word in enumerate(words):
+			if word in negations:
+				j = 0
+				while j != 2 and idx+j < len(words):
+					if words[idx+j] in self.positiveWords:
+						positiveScore -= NEGATION_WEIGHT
+					if words[idx+j] in self.negativeWords:
+						negativeScore -= NEGATION_WEIGHT
+					j += 1
+
+		#  2. Calculate sentiment rank of separate words — second pass
+		for idx, word in enumerate(words):
+			if word in self.positiveWords:
+				positiveScore += 1
+			if word in self.negativeWords:
+				negativeScore += 2
+		
+		totalScore = positiveScore - negativeScore
+
 		# create TextBlob object of passed tweet text 
-		analysis = TextBlob(self.clean_tweet(tweet)) 
+		# analysis = TextBlob(tweet) 
 		# set sentiment 
-		if analysis.sentiment.polarity > 0: 
+		if totalScore > 0: 
 			return 'positive'
-		elif analysis.sentiment.polarity == 0: 
+		elif totalScore == 0: 
 			return 'neutral'
 		else: 
 			return 'negative'
@@ -89,7 +131,7 @@ class TwitterClient(object):
 				parsed_tweet = {} 
 
 				# saving text of tweet 
-				parsed_tweet['text'] = tweet.text 
+				parsed_tweet['text'] = tweet.text.encode('UTF-8')
 				# saving sentiment of tweet 
 				parsed_tweet['sentiment'] = self.get_tweet_sentiment(tweet.text) 
 
@@ -112,7 +154,7 @@ def main():
 	# creating object of TwitterClient Class 
 	api = TwitterClient() 
 	# calling function to get tweets 
-	tweets = api.get_tweets(query = 'prabowo gantipresiden2019', count = 200) 
+	tweets = api.get_tweets(query = 'pdip', count = 1000) 
 
 	# picking positive tweets from tweets 
 	ptweets = [tweet for tweet in tweets if tweet['sentiment'] == 'positive'] 
