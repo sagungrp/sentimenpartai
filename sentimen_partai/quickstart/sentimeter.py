@@ -125,7 +125,7 @@ class TwitterClient(object):
 
 		try: 
 			# call twitter api to fetch tweets 
-			fetched_tweets = self.api.search(q = query, count = count, lang='ID') 
+			fetched_tweets = self.api.search(q = query, count = count) 
 
 			# parsing tweets one by one 
 			for tweet in fetched_tweets: 
@@ -152,11 +152,11 @@ class TwitterClient(object):
 			# print error (if any) 
 			print("Error : " + str(e)) 
 
-def main(): 
+def primary(q): 
 	# creating object of TwitterClient Class 
 	api = TwitterClient() 
 	# calling function to get tweets 
-	tweets = api.get_tweets(query = 'pdip', count = 1000) 
+	tweets = api.get_tweets(query = q, count = 1000) 
 
 	# picking positive tweets from tweets 
 	ptweets = [tweet for tweet in tweets if tweet['sentiment'] == 'positive'] 
@@ -171,17 +171,21 @@ def main():
 
 	# printing first 5 positive tweets 
 	print("\n\nPositive tweets:") 
+	posexam = []
 	for tweet in ptweets[:10]: 
-		print(tweet['text']) 
+		posexam.append(tweet['text']) 
 
 	# printing first 5 negative tweets 
 	print("\n\nNegative tweets:") 
+	negexam = []
 	for tweet in ntweets[:10]: 
-		print(tweet['text']) 
+		negexam.append(tweet['text']) 
 
 	pp = pprint.PrettyPrinter(indent=4)
 	pp.pprint(ptweets)
 
-if __name__ == "__main__": 
-	# calling main function 
-	main() 
+	return [['Positive',100*len(ptweets)/len(tweets)]
+			,['Negative',100*len(ntweets)/len(tweets)]
+			,['Neutral',100*(len(tweets) - len(ntweets) - len(ptweets))/len(tweets)]
+			,['Positive example', posexam]
+			,['Negative example', negexam]]
