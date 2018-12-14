@@ -12,11 +12,8 @@ Make sure virtual environment is created, check so your command prompt look like
 
     (venv) $ _
 Then continue with
-
-    pip install tweepy
-    pip install textblob    
-    pip install pathlib
-    pip install pprint
+    
+    pip install -r req.txt
     python main.py
     
 Then open http://127.0.0.1:5000 in your browser
