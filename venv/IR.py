@@ -9,6 +9,9 @@ from pathlib import Path
 import pprint
 
 negations = {'tak','bkn','tdk','gak','gk','ga','enggak','tidak','bukan','bukanlah','tidaklah'}
+pos = 0
+neg = 0
+net = 0
 
 class TwitterClient(object): 
 	''' 
@@ -155,7 +158,7 @@ class TwitterClient(object):
 			# print error (if any) 
 			print("Error : " + str(e)) 
 
-def main(partai): 
+def main(partai, get): 
 	# creating object of TwitterClient Class
 	api = TwitterClient() 
 	# calling function to get tweets 
@@ -167,12 +170,15 @@ def main(partai):
 	ptweets = [tweet for tweet in tweets if tweet['sentiment'] == 'positive'] 
 	# percentage of positive tweets 
 	result+=("Positive tweets percentage: {} %".format(100*len(ptweets)/len(tweets))) + "<br/>"
+	pos = (100*len(ptweets)/len(tweets))
 	# picking negative tweets from tweets 
 	ntweets = [tweet for tweet in tweets if tweet['sentiment'] == 'negative']
 	# percentage of negative tweets
 	result+=("Negative tweets percentage: {} %".format(100*len(ntweets)/len(tweets))) + "<br/>"
+	neg = (100*len(ntweets)/len(tweets))
 	# percentage of neutral tweets
-	result+=("Neutral tweets percentage: {} %".format(100*(len(tweets) - len(ntweets) - len(ptweets))/len(tweets))) + "<br/><br/>" 
+	result+=("Neutral tweets percentage: {} %".format(100*(len(tweets) - len(ntweets) - len(ptweets))/len(tweets))) + "<br/><br/>"
+	net = (100*(len(tweets) - len(ntweets) - len(ptweets))/len(tweets))
 	# printing first 5 positive tweets 
 	result+=("\n\nPositive tweets:") + "<br/><br/>"
 	for tweet in ptweets[:10]: 
@@ -182,12 +188,20 @@ def main(partai):
 	result+=("\n\nNegative tweets:") + "<br/><br/>"
 	for tweet in ntweets[:10]: 
 		result+=(tweet['text']) + "<br/><br/>"
-		
-	return(str(result))
+	
+	if get == "pos":
+		return pos
+	elif get == "neg":
+		return neg
+	elif get == "net":
+		return net
+	else:
+		return(str(result))
 
 	#pp = pprint.PrettyPrinter(indent=4)
 	#pp.pprint(ptweets)
 
+	
 if __name__ == "__main__": 
 	# calling main function 
 	main() 
