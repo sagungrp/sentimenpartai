@@ -9,6 +9,9 @@ from pathlib import Path
 import pprint
 
 negations = {'tak','bkn','tdk','gak','gk','ga','enggak','tidak','bukan','bukanlah','tidaklah'}
+pos = 0
+neg = 0
+net = 0
 
 class TwitterClient(object): 
 	''' 
@@ -155,37 +158,50 @@ class TwitterClient(object):
 			# print error (if any) 
 			print("Error : " + str(e)) 
 
-def main(): 
-	# creating object of TwitterClient Class 
+def main(partai, get): 
+	# creating object of TwitterClient Class
 	api = TwitterClient() 
 	# calling function to get tweets 
 	#print sys.argv[1]
-	tweets = api.get_tweets(query = sys.argv[1], count = 1000)
-	
+	#tweets = api.get_tweets(query = sys.argv[1], count = 1000)
+	tweets = api.get_tweets(query = partai, count = 1000)
+	result = ""
 	# picking positive tweets from tweets 
 	ptweets = [tweet for tweet in tweets if tweet['sentiment'] == 'positive'] 
 	# percentage of positive tweets 
-	print("Positive tweets percentage: {} %".format(100*len(ptweets)/len(tweets)))
+	result+="<h3>"+("Positive tweets percentage: {} %".format(100*len(ptweets)/len(tweets)))+"</h3>"
+	pos = (100*len(ptweets)/len(tweets))
 	# picking negative tweets from tweets 
 	ntweets = [tweet for tweet in tweets if tweet['sentiment'] == 'negative']
 	# percentage of negative tweets
-	print("Negative tweets percentage: {} %".format(100*len(ntweets)/len(tweets))) 
+	result+="<h3>"+("Negative tweets percentage: {} %".format(100*len(ntweets)/len(tweets)))+"</h3>"
+	neg = (100*len(ntweets)/len(tweets))
 	# percentage of neutral tweets
-	print("Neutral tweets percentage: {} % \ ".format(100*(len(tweets) - len(ntweets) - len(ptweets))/len(tweets))) 
-
+	result+="<h3>"+("Neutral tweets percentage: {} %".format(100*(len(tweets) - len(ntweets) - len(ptweets))/len(tweets)))+"</h3>" + "<br/>"
+	net = (100*(len(tweets) - len(ntweets) - len(ptweets))/len(tweets))
 	# printing first 5 positive tweets 
-	print("\n\nPositive tweets:") 
+	result+=("<h3>Positive tweets:</h3>") + "<br/>"
 	for tweet in ptweets[:10]: 
-		print(tweet['text']) 
+		result+=(tweet['text']) + "<br/><br/>"
 
 	# printing first 5 negative tweets 
-	print("\n\nNegative tweets:") 
+	result+=("<h3>Negative tweets:</h3>") + "<br/>"
 	for tweet in ntweets[:10]: 
-		print(tweet['text']) 
+		result+=(tweet['text']) + "<br/><br/>"
+	
+	if get == "pos":
+		return pos
+	elif get == "neg":
+		return neg
+	elif get == "net":
+		return net
+	else:
+		return(str(result))
 
 	#pp = pprint.PrettyPrinter(indent=4)
 	#pp.pprint(ptweets)
 
+	
 if __name__ == "__main__": 
 	# calling main function 
 	main() 
