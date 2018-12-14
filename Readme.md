@@ -1,4 +1,11 @@
-   # Installation
+Nama Kelompok : TTK
+Anggota :
+Kabul Dasa R - 1406623745
+Sang Agung R. P. - 1406573766
+Judul :
+RULE-BASED SENTIMENT ANALYSIS ATAS PARTAI POLITIK PESERTA PEMILU 2019 MELALUI TWITTER
+
+# Installation
 
     clone repo
     cd.. venv

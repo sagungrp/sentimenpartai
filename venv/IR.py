@@ -9,8 +9,11 @@ from pathlib import Path
 import pprint
 
 negations = {'tak','bkn','tdk','gak','gk','ga','enggak','tidak','bukan','bukanlah','tidaklah'}
+# % of positive tweet
 pos = 0
+# % of negative tweet
 neg = 0
+# % of neutral tweet
 net = 0
 
 class TwitterClient(object): 
@@ -34,10 +37,6 @@ class TwitterClient(object):
 		self.negativeWords = set(p.read().splitlines())
 
 		self.oppositeConjWords = {'tapi', 'tetapi', 'namun'}
-		#p = Path('positive.txt')
-		#self.positiveWords = set(p.read_text().splitlines())
-		#p = Path('negative.txt')
-		#self.negativeWords = set(p.read_text().splitlines())
 
 		# attempt authentication 
 		try: 
@@ -57,8 +56,6 @@ class TwitterClient(object):
 		Utility function to clean tweet text by removing links, special characters 
 		using simple regex statements. 
 		'''
-
-		#print("sebelum: " + tweet)
 		tweet = ' '.join(re.sub("(@[A-Za-z0-9]+)|([^0-9A-Za-z \t])|(\w+:\/\/\S+)", " ", tweet).split())
 		#Convert to lower case
 		tweet = tweet.lower()
@@ -76,7 +73,6 @@ class TwitterClient(object):
 		tweet = re.sub(r'([a-z])\1+', r'\1', tweet)
 		#Remove single-letter words
 		tweet = ' '.join( [w for w in tweet.split() if len(w)>1] )
-		#print("sesudah: " + tweet)
 		return tweet
 
 	def get_tweet_sentiment(self, tweet): 
@@ -175,24 +171,28 @@ class TwitterClient(object):
 def main(partai, get): 
 	# creating object of TwitterClient Class
 	api = TwitterClient() 
-	# calling function to get tweets 
-	#print sys.argv[1]
-	#tweets = api.get_tweets(query = sys.argv[1], count = 1000)
+	# calling function to get tweets
 	tweets = api.get_tweets(query = partai, count = 1000)
 	result = ""
+	
 	# picking positive tweets from tweets 
 	ptweets = [tweet for tweet in tweets if tweet['sentiment'] == 'positive'] 
+	
 	# percentage of positive tweets 
 	result+="<h3>"+("Positive tweets percentage: {} %".format(100*len(ptweets)/len(tweets)))+"</h3>"
 	pos = (100*len(ptweets)/len(tweets))
+	
 	# picking negative tweets from tweets 
 	ntweets = [tweet for tweet in tweets if tweet['sentiment'] == 'negative']
+	
 	# percentage of negative tweets
 	result+="<h3>"+("Negative tweets percentage: {} %".format(100*len(ntweets)/len(tweets)))+"</h3>"
 	neg = (100*len(ntweets)/len(tweets))
+	
 	# percentage of neutral tweets
 	result+="<h3>"+("Neutral tweets percentage: {} %".format(100*(len(tweets) - len(ntweets) - len(ptweets))/len(tweets)))+"</h3>" + "<br/>"
 	net = (100*(len(tweets) - len(ntweets) - len(ptweets))/len(tweets))
+	
 	# printing first 5 positive tweets 
 	result+=("<h3>Positive tweets:</h3>") + "<br/>"
 	for tweet in ptweets[:10]: 
