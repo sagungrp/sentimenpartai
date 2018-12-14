@@ -32,6 +32,8 @@ class TwitterClient(object):
 		self.positiveWords = set(p.read().splitlines())
 		p = open("negative.txt", "r")
 		self.negativeWords = set(p.read().splitlines())
+
+		self.oppositeConjWords = {'tapi', 'tetapi', 'namun'}
 		#p = Path('positive.txt')
 		#self.positiveWords = set(p.read_text().splitlines())
 		#p = Path('negative.txt')
@@ -92,7 +94,7 @@ class TwitterClient(object):
 		
 		words = tweet.split()
 
-		#  1. analyze negation word window first
+		#  1. Analyze negation word window — first pass
 		for idx, word in enumerate(words):
 			if word in negations:
 				j = 0
@@ -109,8 +111,20 @@ class TwitterClient(object):
 				positiveScore += 1
 			if word in self.negativeWords:
 				negativeScore += 2
+
+		#  3. Global view of a sentence for handling opposite conjunctions — third pass 
+		for idx, word in enumerate(words):
+			sentimentCount = 0
+			oppositeSentimentScore = 0
+
+			if word in self.positiveWords:
+				sentimentCount += 1
+			if word in self.negativeWords:
+				sentimentCount -= 1
+			if word in self.oppositeConjWords:
+				oppositeSentimentScore = OPPOSITE_CONJUNCTION_WEIGHT * sentimentCount / 2
 		
-		totalScore = positiveScore - negativeScore
+		totalScore = positiveScore - negativeScore + oppositeSentimentScore
 
 		# create TextBlob object of passed tweet text 
 		# analysis = TextBlob(tweet) 
