@@ -169,23 +169,23 @@ def main(partai, get):
 	# picking positive tweets from tweets 
 	ptweets = [tweet for tweet in tweets if tweet['sentiment'] == 'positive'] 
 	# percentage of positive tweets 
-	result+=("Positive tweets percentage: {} %".format(100*len(ptweets)/len(tweets))) + "<br/>"
+	result+="<h3>"+("Positive tweets percentage: {} %".format(100*len(ptweets)/len(tweets)))+"</h3>"
 	pos = (100*len(ptweets)/len(tweets))
 	# picking negative tweets from tweets 
 	ntweets = [tweet for tweet in tweets if tweet['sentiment'] == 'negative']
 	# percentage of negative tweets
-	result+=("Negative tweets percentage: {} %".format(100*len(ntweets)/len(tweets))) + "<br/>"
+	result+="<h3>"+("Negative tweets percentage: {} %".format(100*len(ntweets)/len(tweets)))+"</h3>"
 	neg = (100*len(ntweets)/len(tweets))
 	# percentage of neutral tweets
-	result+=("Neutral tweets percentage: {} %".format(100*(len(tweets) - len(ntweets) - len(ptweets))/len(tweets))) + "<br/><br/>"
+	result+="<h3>"+("Neutral tweets percentage: {} %".format(100*(len(tweets) - len(ntweets) - len(ptweets))/len(tweets)))+"</h3>" + "<br/>"
 	net = (100*(len(tweets) - len(ntweets) - len(ptweets))/len(tweets))
 	# printing first 5 positive tweets 
-	result+=("\n\nPositive tweets:") + "<br/><br/>"
+	result+=("<h3>Positive tweets:</h3>") + "<br/>"
 	for tweet in ptweets[:10]: 
 		result+=(tweet['text']) + "<br/><br/>"
 
 	# printing first 5 negative tweets 
-	result+=("\n\nNegative tweets:") + "<br/><br/>"
+	result+=("<h3>Negative tweets:</h3>") + "<br/>"
 	for tweet in ntweets[:10]: 
 		result+=(tweet['text']) + "<br/><br/>"
 	
