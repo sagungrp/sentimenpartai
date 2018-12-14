@@ -1,4 +1,6 @@
-import re 
+# coding: utf-8
+import re
+import sys
 import tweepy 
 from tweepy import OAuthHandler 
 from textblob import TextBlob
@@ -22,11 +24,15 @@ class TwitterClient(object):
 		consumer_secret = 'qm5kdAjHLjSVNBoclAlzPVPAyJPTXmEhwCUdJixvdll5CmqRVz'
 		access_token = '1070195239707586560-wjbg5Rog9s8MX0ZuImdBXe0BUCLflQ'
 		access_token_secret = 'HVbRVALs3iwqSQKQ5k3QkLN4mms5GMd9AgVIa3H0kHxAg'
-
-		p = Path('positive.txt')
-		self.positiveWords = set(p.read_text().splitlines())
-		p = Path('negative.txt')
-		self.negativeWords = set(p.read_text().splitlines())
+		
+		p = open("positive.txt", "r")
+		self.positiveWords = set(p.read().splitlines())
+		p = open("negative.txt", "r")
+		self.negativeWords = set(p.read().splitlines())
+		#p = Path('positive.txt')
+		#self.positiveWords = set(p.read_text().splitlines())
+		#p = Path('negative.txt')
+		#self.negativeWords = set(p.read_text().splitlines())
 
 		# attempt authentication 
 		try: 
@@ -47,7 +53,7 @@ class TwitterClient(object):
 		using simple regex statements. 
 		'''
 
-		print("sebelum: " + tweet)
+		#print("sebelum: " + tweet)
 		tweet = ' '.join(re.sub("(@[A-Za-z0-9]+)|([^0-9A-Za-z \t])|(\w+:\/\/\S+)", " ", tweet).split())
 		#Convert to lower case
 		tweet = tweet.lower()
@@ -65,10 +71,7 @@ class TwitterClient(object):
 		tweet = re.sub(r'([a-z])\1+', r'\1', tweet)
 		#Remove single-letter words
 		tweet = ' '.join( [w for w in tweet.split() if len(w)>1] )
-
-		#Decode tweet to UTF-8 to enable printing
-		#TODO - add html.escape to convert thing such as ampersand and apostrophe
-		print("sesudah: " + tweet)
+		#print("sesudah: " + tweet)
 		return tweet
 
 	def get_tweet_sentiment(self, tweet): 
@@ -116,7 +119,7 @@ class TwitterClient(object):
 		else: 
 			return 'negative'
 
-	def get_tweets(self, query, count = 10): 
+	def get_tweets(self, query, count = 1000): 
 		''' 
 		Main function to fetch tweets and parse them. 
 		'''
@@ -125,7 +128,7 @@ class TwitterClient(object):
 
 		try: 
 			# call twitter api to fetch tweets 
-			fetched_tweets = self.api.search(q = query, count = count, lang='ID') 
+			fetched_tweets = self.api.search(q = query, count = count) 
 
 			# parsing tweets one by one 
 			for tweet in fetched_tweets: 
@@ -156,8 +159,9 @@ def main():
 	# creating object of TwitterClient Class 
 	api = TwitterClient() 
 	# calling function to get tweets 
-	tweets = api.get_tweets(query = 'pdip', count = 1000) 
-
+	#print sys.argv[1]
+	tweets = api.get_tweets(query = sys.argv[1], count = 1000)
+	
 	# picking positive tweets from tweets 
 	ptweets = [tweet for tweet in tweets if tweet['sentiment'] == 'positive'] 
 	# percentage of positive tweets 
@@ -179,8 +183,8 @@ def main():
 	for tweet in ntweets[:10]: 
 		print(tweet['text']) 
 
-	pp = pprint.PrettyPrinter(indent=4)
-	pp.pprint(ptweets)
+	#pp = pprint.PrettyPrinter(indent=4)
+	#pp.pprint(ptweets)
 
 if __name__ == "__main__": 
 	# calling main function 
