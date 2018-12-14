@@ -221,7 +221,7 @@ def showChart(partai):
 	net = IR.main(partai, "net")
 	values = [pos, neg, net]
 	pie_values = values
-	return (render_template('chart.html', sentiment=(IR.main(partai, 0)).decode('utf-8'), title='Analisa Sentimen Tweet mengenai' + partai, max=17000, set=zip(values, labels, colors)))
+	return (render_template('chart.html', sentiment=(IR.main(partai, 0)).decode('utf-8'), title='Analisa Sentimen Tweet mengenai ' + partai, max=17000, set=zip(values, labels, colors)))
 
 
 
