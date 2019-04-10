@@ -6,13 +6,6 @@ import codecs
 app = Flask(__name__)
 api = Api(app)
 
-labels = [
-    'Positive Tweets','Neutral Tweets','Negative Tweets'
-]
-
-colors = [
-    "#46BFBD", "#FEDCBA", "#FF4500"]
-
 @app.route('/')
 def start():
 	# f=codecs.open("./index.html",'r')
@@ -215,13 +208,11 @@ def start():
    
 @app.route('/<partai>')
 def showChart(partai):
-	pie_labels = labels
 	pos = IR.main(partai, "pos")
 	neg = IR.main(partai, "neg")
 	net = IR.main(partai, "net")
 	values = [pos, neg, net]
-	pie_values = values
-	return (render_template('chart.html', sentiment=(IR.main(partai, 0)).decode('utf-8'), title='Analisa Sentimen Tweet mengenai ' + partai, max=17000, set=zip(values, labels, colors)))
+	return (render_template('chart.html', sentiment=(IR.main(partai, 0)), title='Analisa Sentimen Tweet mengenai ' + partai, values=str(values)))
 
 
 

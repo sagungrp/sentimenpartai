@@ -82,6 +82,7 @@ class TwitterClient(object):
 		'''
 		positiveScore = 0
 		negativeScore = 0
+		oppositeSentimentScore = 0
 		totalScore = 0
 		NEGATION_WEIGHT = 2
 		OPPOSITE_CONJUNCTION_WEIGHT = -1
@@ -111,7 +112,6 @@ class TwitterClient(object):
 		#  3. Global view of a sentence for handling opposite conjunctions — third pass 
 		for idx, word in enumerate(words):
 			sentimentCount = 0
-			oppositeSentimentScore = 0
 
 			if word in self.positiveWords:
 				sentimentCount += 1
@@ -174,7 +174,7 @@ def main(partai, get):
 	# calling function to get tweets
 	tweets = api.get_tweets(query = partai, count = 1000)
 	result = ""
-	
+
 	# picking positive tweets from tweets 
 	ptweets = [tweet for tweet in tweets if tweet['sentiment'] == 'positive'] 
 	
@@ -196,12 +196,12 @@ def main(partai, get):
 	# printing first 5 positive tweets 
 	result+=("<h3>Positive tweets:</h3>") + "<br/>"
 	for tweet in ptweets[:10]: 
-		result+=(tweet['text']) + "<br/><br/>"
+		result+=str(tweet['text']) + "<br/><br/>"
 
 	# printing first 5 negative tweets 
 	result+=("<h3>Negative tweets:</h3>") + "<br/>"
 	for tweet in ntweets[:10]: 
-		result+=(tweet['text']) + "<br/><br/>"
+		result+=str(tweet['text']) + "<br/><br/>"
 	
 	if get == "pos":
 		return pos

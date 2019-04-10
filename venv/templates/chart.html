@@ -9,23 +9,25 @@
 <body>
     <h1>{{ title }}</h1>
 	<div>
-		<div><canvas id="chart" width="600" height="400"></canvas></div>
+		<div><canvas id="myChart"></canvas></div>
 		<script>
-		  var pieData = [
-			{% for item, label, colors in set %}
-			  {
-				value: {{item}},
-				label: "{{label}}",
-				color : "{{colors}}"
+			var options = {
+			  type: 'pie',
+			  data: {
+				labels: ['Positive Tweets','Negative Tweets', 'Neutral Tweets'],
+				datasets: [
+					{
+					  label: '# of Votes',
+					  data: {{ values }},
+					  borderWidth: 1,
+					  backgroundColor: ["#46BFBD", "#FF4500", "#FEDCBA"]
+					}
+					]
 			  },
-			{% endfor %}
-		  ];
-		  // get bar chart canvas
-		  var mychart = document.getElementById("chart").getContext("2d");
-		  steps = 10
-		  max = {{ max }}
-		  // draw pie chart
-		  new Chart(document.getElementById("chart").getContext("2d")).Pie(pieData);
+			}
+			var ctx = document.getElementById('myChart').getContext('2d');
+			new Chart(ctx, options);
+
 		</script>
 	</div>
 	<p>{{ sentiment|safe }}</p>
